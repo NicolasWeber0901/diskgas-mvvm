@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 
 import 'services/auth_service.dart';
 import 'services/cliente_service.dart';
+import 'services/pedido_service.dart';
+import 'services/produto_service.dart';
 import 'viewmodels/sessao_viewmodel.dart';
 import 'views/app.dart';
 
@@ -21,12 +23,16 @@ Future<void> main() async {
     firestore,
   );
   final clienteService = ClienteService(firestore);
+  final produtoService = ProdutoService(firestore);
+  final pedidoService = PedidoService(firestore);
 
   runApp(
     MultiProvider(
       providers: [
         Provider.value(value: authService),
         Provider.value(value: clienteService),
+        Provider.value(value: produtoService),
+        Provider.value(value: pedidoService),
         ChangeNotifierProvider(
           create: (_) => SessaoViewModel(authService)..iniciar(),
         ),

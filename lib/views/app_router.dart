@@ -3,9 +3,13 @@ import 'package:provider/provider.dart';
 
 import '../services/auth_service.dart';
 import '../services/cliente_service.dart';
+import '../services/pedido_service.dart';
+import '../services/produto_service.dart';
 import '../viewmodels/cadastro_viewmodel.dart';
+import '../viewmodels/carrinho_viewmodel.dart';
 import '../viewmodels/login_viewmodel.dart';
 import '../viewmodels/sessao_viewmodel.dart';
+import 'acompanhamento_view.dart';
 import 'cadastro_view.dart';
 import 'carregando_view.dart';
 import 'carrinho_view.dart';
@@ -66,7 +70,21 @@ GoRouter criarRotas(SessaoViewModel sessao) {
       ),
       GoRoute(
         path: '/cliente',
-        builder: (context, state) => const CarrinhoView(),
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (context) => CarrinhoViewModel(
+            context.read<AuthService>(),
+            context.read<ClienteService>(),
+            context.read<ProdutoService>(),
+            context.read<PedidoService>(),
+          )..iniciar(),
+          child: const CarrinhoView(),
+        ),
+        routes: [
+          GoRoute(
+            path: 'pedidos',
+            builder: (context, state) => const AcompanhamentoView(),
+          ),
+        ],
       ),
       GoRoute(path: '/admin', builder: (context, state) => const PedidosView()),
     ],
