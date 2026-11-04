@@ -49,3 +49,6 @@ app.*.map.json
 
 # Configuração do Firebase (fica só na máquina de quem roda)
 /android/app/google-services.json
+
+# Chave da Routes API (fica só na máquina de quem roda)
+dart_defines.json

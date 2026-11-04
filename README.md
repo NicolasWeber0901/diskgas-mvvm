@@ -24,7 +24,10 @@ O caminho das dependências é View → ViewModel → serviço.
 2. Copie o `google-services.json` do app Android `br.udesc.ceavi.diskgas.mvvm`
    (console do Firebase) para `android/app/`. Ele não vai para o repositório.
 3. Cole o `firestore.rules` em Firestore > Regras.
-4. `flutter run`
+4. Crie o `dart_defines.json` na raiz do projeto com
+   `{"ROUTES_API_KEY": "<chave restrita à Routes API>"}`. Ele não vai para o
+   repositório.
+5. `flutter run --dart-define-from-file=dart_defines.json`
 
 ## Testes
 

@@ -3,12 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import 'services/auth_service.dart';
 import 'services/cliente_service.dart';
 import 'services/pedido_service.dart';
 import 'services/produto_service.dart';
+import 'services/rota_service.dart';
 import 'viewmodels/sessao_viewmodel.dart';
 import 'views/app.dart';
 
@@ -25,6 +27,10 @@ Future<void> main() async {
   final clienteService = ClienteService(firestore);
   final produtoService = ProdutoService(firestore);
   final pedidoService = PedidoService(firestore);
+  final rotaService = RotaService(
+    http.Client(),
+    const String.fromEnvironment('ROUTES_API_KEY'),
+  );
 
   runApp(
     MultiProvider(
@@ -33,6 +39,7 @@ Future<void> main() async {
         Provider.value(value: clienteService),
         Provider.value(value: produtoService),
         Provider.value(value: pedidoService),
+        Provider.value(value: rotaService),
         ChangeNotifierProvider(
           create: (_) => SessaoViewModel(authService)..iniciar(),
         ),
