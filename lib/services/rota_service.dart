@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -19,33 +20,35 @@ class RotaService {
   Future<Deslocamento> calcularDeslocamento(String destino) async {
     if (_chaveApi.isEmpty) throw const FalhaRota();
     try {
-      final resposta = await _cliente.post(
-        Uri.parse(
-          'https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix',
-        ),
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Goog-Api-Key': _chaveApi,
-          'X-Goog-FieldMask':
-              'originIndex,destinationIndex,status,condition,'
-              'distanceMeters,duration',
-        },
-        body: jsonEncode({
-          'origins': [
-            {
-              'waypoint': {'address': enderecoDeposito},
+      final resposta = await _cliente
+          .post(
+            Uri.parse(
+              'https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix',
+            ),
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Goog-Api-Key': _chaveApi,
+              'X-Goog-FieldMask':
+                  'originIndex,destinationIndex,status,condition,'
+                  'distanceMeters,duration',
             },
-          ],
-          'destinations': [
-            {
-              'waypoint': {'address': destino},
-            },
-          ],
-          'travelMode': 'DRIVE',
-          'languageCode': 'pt-BR',
-          'regionCode': 'BR',
-        }),
-      );
+            body: jsonEncode({
+              'origins': [
+                {
+                  'waypoint': {'address': enderecoDeposito},
+                },
+              ],
+              'destinations': [
+                {
+                  'waypoint': {'address': destino},
+                },
+              ],
+              'travelMode': 'DRIVE',
+              'languageCode': 'pt-BR',
+              'regionCode': 'BR',
+            }),
+          )
+          .timeout(const Duration(seconds: 10));
       if (resposta.statusCode != 200) throw const FalhaRota();
 
       final lista = jsonDecode(resposta.body);
@@ -70,6 +73,8 @@ class RotaService {
         distanciaMetros: distancia.toInt(),
         duracaoSegundos: segundos.round(),
       );
+    } on TimeoutException {
+      throw const FalhaRota();
     } on SocketException {
       throw const FalhaRota();
     } on http.ClientException {

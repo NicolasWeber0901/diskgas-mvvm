@@ -16,7 +16,8 @@ service cloud.firestore {
       allow create: if logado() && request.auth.uid == uid &&
         request.resource.data.perfil == 'cliente';
       allow update: if logado() && request.auth.uid == uid &&
-        request.resource.data.perfil == resource.data.perfil;
+        request.resource.data.perfil == resource.data.perfil &&
+        request.resource.data.cpf == resource.data.cpf;
     }
 
     match /cpfs/{cpf} {

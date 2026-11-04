@@ -51,8 +51,9 @@ class Pedido {
       itens: (map['itens'] as List? ?? [])
           .map((item) => ItemPedido.fromMap(Map<String, dynamic>.from(item)))
           .toList(),
-      situacao: SituacaoPedido.values.byName(
-        map['situacao'] as String? ?? 'aguardando',
+      situacao: SituacaoPedido.values.firstWhere(
+        (situacao) => situacao.name == map['situacao'],
+        orElse: () => SituacaoPedido.aguardando,
       ),
       dataCriacao: _data(map['dataCriacao']) ?? DateTime.now(),
       deslocamento: distancia != null && duracao != null

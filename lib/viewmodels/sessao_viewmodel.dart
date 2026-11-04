@@ -27,7 +27,11 @@ class SessaoViewModel extends ChangeNotifier {
   SessaoViewModel(this._authService);
 
   void iniciar() {
-    _inscricao = _authService.observarUsuario().listen(_aoMudarUsuario);
+    _inscricao = _authService.observarUsuario().listen(
+      _aoMudarUsuario,
+      onError: (Object _) =>
+          _mudar(EstadoSessao.falha, erro: const FalhaConexao().mensagem),
+    );
   }
 
   Future<void> atualizar() => _aoMudarUsuario(_authService.uidAtual);

@@ -6,6 +6,7 @@ import '../services/falhas.dart';
 /// US01 e US02. A tela inicial de cada perfil é escolhida pela sessão.
 class LoginViewModel extends ChangeNotifier {
   final AuthService _authService;
+  bool _descartado = false;
 
   bool carregando = false;
   String? erro;
@@ -42,7 +43,13 @@ class LoginViewModel extends ChangeNotifier {
       return false;
     } finally {
       carregando = false;
-      notifyListeners();
+      if (!_descartado) notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    _descartado = true;
+    super.dispose();
   }
 }

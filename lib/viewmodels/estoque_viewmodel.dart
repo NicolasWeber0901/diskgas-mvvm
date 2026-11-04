@@ -10,6 +10,7 @@ import '../services/produto_service.dart';
 class EstoqueViewModel extends ChangeNotifier {
   final ProdutoService _produtoService;
   StreamSubscription<List<Produto>>? _inscricao;
+  bool _descartado = false;
 
   List<Produto> produtos = [];
   bool carregando = true;
@@ -80,6 +81,7 @@ class EstoqueViewModel extends ChangeNotifier {
   }
 
   void limparErro() {
+    if (_descartado) return;
     erro = null;
     notifyListeners();
   }
@@ -102,12 +104,13 @@ class EstoqueViewModel extends ChangeNotifier {
       return false;
     } finally {
       salvando = false;
-      notifyListeners();
+      if (!_descartado) notifyListeners();
     }
   }
 
   @override
   void dispose() {
+    _descartado = true;
     _inscricao?.cancel();
     super.dispose();
   }

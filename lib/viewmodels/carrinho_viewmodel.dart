@@ -61,7 +61,7 @@ class CarrinhoViewModel extends ChangeNotifier {
       enderecoEntrega = cliente?.endereco;
       notifyListeners();
     } on FalhaServico {
-      // O endereço é conferido de novo no envio (RN02).
+      // RN02: o endereço é conferido de novo no envio.
     }
   }
 

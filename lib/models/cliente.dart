@@ -25,7 +25,9 @@ class Cliente {
       nome: map['nome'] as String? ?? '',
       telefone: map['telefone'] as String? ?? '',
       cpf: map['cpf'] as String? ?? '',
-      dataNascimento: DateTime.parse(map['dataNascimento'] as String),
+      dataNascimento:
+          DateTime.tryParse(map['dataNascimento'] as String? ?? '') ??
+          DateTime(1900),
       endereco: Endereco.fromMap(
         Map<String, dynamic>.from(map['endereco'] as Map? ?? {}),
       ),

@@ -148,6 +148,7 @@ class DetalhePedidoViewModel extends ChangeNotifier {
   }
 
   void limparErro() {
+    if (_descartado) return;
     erro = null;
     notifyListeners();
   }

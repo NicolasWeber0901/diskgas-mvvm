@@ -19,7 +19,10 @@ class PedidoService {
 
   Future<String> criar(Pedido pedido) async {
     try {
-      final documento = await _pedidos.add(pedido.toMap());
+      final documento = await _pedidos.add({
+        ...pedido.toMap(),
+        'dataCriacao': FieldValue.serverTimestamp(),
+      });
       return documento.id;
     } on FirebaseException {
       throw const FalhaConexao();
@@ -97,6 +100,11 @@ class PedidoService {
         final estoques = <String, int>{};
         for (final item in pedido.itens) {
           final produto = await transacao.get(_produtos.doc(item.produtoId));
+          if (!produto.exists) {
+            throw FalhaServico(
+              'O produto ${item.nomeProduto} não existe mais.',
+            );
+          }
           final estoque = (produto.data()?['quantidadeEstoque'] as num? ?? 0)
               .toInt();
           final entregue =
