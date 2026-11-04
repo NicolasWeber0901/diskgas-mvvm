@@ -8,12 +8,14 @@ import '../services/produto_service.dart';
 import '../viewmodels/acompanhamento_viewmodel.dart';
 import '../viewmodels/cadastro_viewmodel.dart';
 import '../viewmodels/carrinho_viewmodel.dart';
+import '../viewmodels/estoque_viewmodel.dart';
 import '../viewmodels/login_viewmodel.dart';
 import '../viewmodels/sessao_viewmodel.dart';
 import 'acompanhamento_view.dart';
 import 'cadastro_view.dart';
 import 'carregando_view.dart';
 import 'carrinho_view.dart';
+import 'estoque_view.dart';
 import 'login_view.dart';
 import 'pedidos_view.dart';
 
@@ -93,7 +95,20 @@ GoRouter criarRotas(SessaoViewModel sessao) {
           ),
         ],
       ),
-      GoRoute(path: '/admin', builder: (context, state) => const PedidosView()),
+      GoRoute(
+        path: '/admin',
+        builder: (context, state) => const PedidosView(),
+        routes: [
+          GoRoute(
+            path: 'estoque',
+            builder: (context, state) => ChangeNotifierProvider(
+              create: (context) =>
+                  EstoqueViewModel(context.read<ProdutoService>())..iniciar(),
+              child: const EstoqueView(),
+            ),
+          ),
+        ],
+      ),
     ],
   );
 }
