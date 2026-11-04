@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/pedido.dart';
 import 'falhas.dart';
 
-/// US06: grava os pedidos em pedidos/{id}.
+/// US06 e US07: grava e acompanha os pedidos em pedidos/{id}.
 class PedidoService {
   final FirebaseFirestore _firestore;
 
@@ -19,5 +19,18 @@ class PedidoService {
     } on FirebaseException {
       throw const FalhaConexao();
     }
+  }
+
+  Stream<List<Pedido>> observarPedidosDoCliente(String clienteId) {
+    return _pedidos
+        .where('clienteId', isEqualTo: clienteId)
+        .snapshots()
+        .map(
+          (consulta) => consulta.docs
+              .map(
+                (documento) => Pedido.fromMap(documento.id, documento.data()),
+              )
+              .toList(),
+        );
   }
 }

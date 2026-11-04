@@ -5,6 +5,7 @@ import '../services/auth_service.dart';
 import '../services/cliente_service.dart';
 import '../services/pedido_service.dart';
 import '../services/produto_service.dart';
+import '../viewmodels/acompanhamento_viewmodel.dart';
 import '../viewmodels/cadastro_viewmodel.dart';
 import '../viewmodels/carrinho_viewmodel.dart';
 import '../viewmodels/login_viewmodel.dart';
@@ -82,7 +83,13 @@ GoRouter criarRotas(SessaoViewModel sessao) {
         routes: [
           GoRoute(
             path: 'pedidos',
-            builder: (context, state) => const AcompanhamentoView(),
+            builder: (context, state) => ChangeNotifierProvider(
+              create: (context) => AcompanhamentoViewModel(
+                context.read<AuthService>(),
+                context.read<PedidoService>(),
+              )..iniciar(),
+              child: const AcompanhamentoView(),
+            ),
           ),
         ],
       ),
