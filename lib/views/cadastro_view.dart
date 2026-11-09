@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../models/endereco.dart';
 import '../viewmodels/cadastro_viewmodel.dart';
 import '../viewmodels/sessao_viewmodel.dart';
 import 'widgets/botao_sair.dart';
+import 'widgets/mascaras.dart';
 import 'widgets/mensagem_erro.dart';
 
 /// US04, também no primeiro acesso com a conta Google.
@@ -54,7 +56,7 @@ class _CadastroViewState extends State<CadastroView> {
     final sessao = context.read<SessaoViewModel>();
     final concluido = await viewModel.cadastrar(
       nome: _campos['nome']!.text,
-      telefone: _campos['telefone']!.text,
+      telefone: _campos['telefone']!.text.replaceAll(RegExp(r'\D'), ''),
       cpf: _campos['cpf']!.text,
       dataNascimento: _dataNascimento,
       endereco: Endereco(
@@ -78,6 +80,7 @@ class _CadastroViewState extends State<CadastroView> {
       String nome,
       String rotulo, {
       TextInputType? teclado,
+      TextInputFormatter? mascara,
       bool oculto = false,
     }) {
       return Padding(
@@ -85,6 +88,7 @@ class _CadastroViewState extends State<CadastroView> {
         child: TextField(
           controller: _campos[nome],
           keyboardType: teclado,
+          inputFormatters: mascara == null ? null : [mascara],
           obscureText: oculto,
           decoration: InputDecoration(
             labelText: rotulo,
@@ -106,8 +110,18 @@ class _CadastroViewState extends State<CadastroView> {
         padding: const EdgeInsets.all(24),
         children: [
           campo('nome', 'Nome'),
-          campo('telefone', 'Telefone', teclado: TextInputType.phone),
-          campo('cpf', 'CPF', teclado: TextInputType.number),
+          campo(
+            'telefone',
+            'Telefone',
+            teclado: TextInputType.phone,
+            mascara: MascaraNumerica.telefone,
+          ),
+          campo(
+            'cpf',
+            'CPF',
+            teclado: TextInputType.number,
+            mascara: MascaraNumerica.cpf,
+          ),
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: InkWell(

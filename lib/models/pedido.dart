@@ -37,6 +37,9 @@ class Pedido {
   double get valorTotal =>
       itens.fold(0, (total, item) => total + item.subtotal);
 
+  double get valorFinal =>
+      itens.fold(0, (total, item) => total + item.valorFinal);
+
   factory Pedido.fromMap(String id, Map<String, dynamic> map) {
     final distancia = map['distanciaMetros'] as num?;
     final duracao = map['duracaoSegundos'] as num?;

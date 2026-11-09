@@ -15,6 +15,9 @@ class ItemPedido {
 
   double get subtotal => precoUnitario * quantidadePedida;
 
+  double get valorFinal =>
+      precoUnitario * (quantidadeEntregue ?? quantidadePedida);
+
   factory ItemPedido.fromMap(Map<String, dynamic> map) {
     return ItemPedido(
       produtoId: map['produtoId'] as String? ?? '',

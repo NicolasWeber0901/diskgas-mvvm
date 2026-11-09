@@ -90,7 +90,9 @@ class CadastroViewModel extends ChangeNotifier {
   }) {
     final erros = <String, String>{};
     if (nome.isEmpty) erros['nome'] = 'Informe o nome.';
-    if (telefone.isEmpty) erros['telefone'] = 'Informe o telefone.';
+    if (telefone.replaceAll(RegExp(r'\D'), '').length != 11) {
+      erros['telefone'] = 'Informe o celular com DDD, 11 dígitos.';
+    }
     // RN03: CPF válido, conferido pelos dois dígitos verificadores.
     if (!cpfValido(cpf)) erros['cpf'] = 'CPF inválido';
     if (dataNascimento == null) {
