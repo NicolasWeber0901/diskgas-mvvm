@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../viewmodels/login_viewmodel.dart';
+import 'tema.dart';
 import 'widgets/mensagem_erro.dart';
 
 /// US01 e US02.
@@ -35,13 +36,8 @@ class _LoginViewState extends State<LoginView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(Icons.local_fire_department, size: 64),
-                Text(
-                  'Disk Gás e Água',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
+                const _Marca(),
+                const SizedBox(height: 36),
                 TextField(
                   controller: _email,
                   keyboardType: TextInputType.emailAddress,
@@ -80,6 +76,65 @@ class _LoginViewState extends State<LoginView> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _Marca extends StatelessWidget {
+  const _Marca();
+
+  @override
+  Widget build(BuildContext context) {
+    final textos = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: CoresDiskGas.laranja,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(
+                Icons.local_fire_department_rounded,
+                color: Colors.white,
+                size: 32,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: CoresDiskGas.azulAgua,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(
+                Icons.water_drop_rounded,
+                color: Colors.white,
+                size: 30,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        Text(
+          'Disk Gás\ne Água',
+          style: textos.displaySmall?.copyWith(
+            fontWeight: FontWeight.w900,
+            height: 1.0,
+            letterSpacing: -1.2,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Seu gás e sua água entregues em casa, sem precisar ligar.',
+          style: textos.bodyLarge?.copyWith(color: CoresDiskGas.cinzaQuente),
+        ),
+      ],
     );
   }
 }

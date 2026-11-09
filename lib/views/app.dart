@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../viewmodels/sessao_viewmodel.dart';
 import 'app_router.dart';
+import 'tema.dart';
 
 class DiskGasApp extends StatefulWidget {
   const DiskGasApp({super.key});
@@ -26,6 +27,7 @@ class _DiskGasAppState extends State<DiskGasApp> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Disk Gás e Água',
+      theme: criarTema(),
       routerConfig: _rotas,
       locale: const Locale('pt', 'BR'),
       supportedLocales: const [Locale('pt', 'BR')],
