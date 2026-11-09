@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../models/coordenada.dart';
 import '../models/pedido.dart';
 import '../models/situacao_pedido.dart';
 import '../services/falhas.dart';
@@ -145,6 +146,13 @@ class DetalhePedidoViewModel extends ChangeNotifier {
       }
       await _pedidoService.finalizarEntrega(atual, quantidades);
     });
+  }
+
+  List<Coordenada> get rota {
+    final polilinha = pedido?.deslocamento?.polilinha;
+    return polilinha == null
+        ? const []
+        : _rotaService.decodificarRota(polilinha);
   }
 
   void limparErro() {

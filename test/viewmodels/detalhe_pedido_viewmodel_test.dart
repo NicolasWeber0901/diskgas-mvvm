@@ -39,6 +39,7 @@ void main() {
   const deslocamento = Deslocamento(
     distanciaMetros: 12400,
     duracaoSegundos: 900,
+    polilinha: '_p~iF~ps|U_ulLnnqC_mqNvxq`@',
   );
 
   Pedido pedidoCom({

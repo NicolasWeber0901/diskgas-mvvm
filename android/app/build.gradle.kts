@@ -1,3 +1,10 @@
+import java.util.Properties
+
+val propriedadesLocais = Properties().apply {
+    val arquivo = rootProject.file("local.properties")
+    if (arquivo.exists()) arquivo.inputStream().use { load(it) }
+}
+
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
@@ -28,6 +35,8 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["MAPS_API_KEY"] =
+            propriedadesLocais.getProperty("MAPS_API_KEY", "")
     }
 
     buildTypes {

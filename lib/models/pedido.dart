@@ -63,6 +63,7 @@ class Pedido {
           ? Deslocamento(
               distanciaMetros: distancia.toInt(),
               duracaoSegundos: duracao.toInt(),
+              polilinha: map['polilinha'] as String?,
             )
           : null,
       tempoEstimadoMinutos: (map['tempoEstimadoMinutos'] as num?)?.toInt(),
@@ -83,6 +84,8 @@ class Pedido {
       if (deslocamento != null) ...{
         'distanciaMetros': deslocamento!.distanciaMetros,
         'duracaoSegundos': deslocamento!.duracaoSegundos,
+        if (deslocamento!.polilinha != null)
+          'polilinha': deslocamento!.polilinha,
       },
       if (tempoEstimadoMinutos != null)
         'tempoEstimadoMinutos': tempoEstimadoMinutos,

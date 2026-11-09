@@ -65,6 +65,7 @@ class PedidoService {
     return _atualizar(id, {
       'distanciaMetros': deslocamento.distanciaMetros,
       'duracaoSegundos': deslocamento.duracaoSegundos,
+      if (deslocamento.polilinha != null) 'polilinha': deslocamento.polilinha,
     });
   }
 
