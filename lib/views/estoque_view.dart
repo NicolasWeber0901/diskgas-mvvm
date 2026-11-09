@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../models/produto.dart';
 import '../viewmodels/estoque_viewmodel.dart';
+import 'tema.dart';
 import 'widgets/botao_sair.dart';
+import 'widgets/botoes_dialogo.dart';
+import 'widgets/estado_vazio.dart';
 import 'widgets/formatos.dart';
+import 'widgets/icone_produto.dart';
 import 'widgets/mensagem_erro.dart';
+import 'widgets/navegacao_admin.dart';
 
 /// Tela de estoque do administrador (US08 e US09).
 class EstoqueView extends StatelessWidget {
@@ -35,10 +39,11 @@ class EstoqueView extends StatelessWidget {
     final viewModel = context.watch<EstoqueViewModel>();
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(onPressed: () => context.go('/admin')),
+        automaticallyImplyLeading: false,
         title: const Text('Estoque'),
         actions: const [BotaoSair()],
       ),
+      bottomNavigationBar: const NavegacaoAdmin(2),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () =>
             _abrirDialogo(context, viewModel, const _DialogoProduto()),
@@ -48,37 +53,96 @@ class EstoqueView extends StatelessWidget {
       body: viewModel.carregando
           ? const Center(child: CircularProgressIndicator())
           : viewModel.produtos.isEmpty
-          ? Center(
-              child: viewModel.erro != null
-                  ? MensagemErro(viewModel.erro)
-                  : const Text('Nenhum produto cadastrado.'),
-            )
+          ? viewModel.erro != null
+                ? Center(child: MensagemErro(viewModel.erro))
+                : const EstadoVazio(
+                    icone: Icons.inventory_2_outlined,
+                    mensagem: 'Nenhum produto cadastrado.',
+                  )
           : ListView(
+              padding: const EdgeInsets.only(top: 8, bottom: 96),
               children: [
                 for (final produto in viewModel.produtos)
-                  ListTile(
-                    title: Text(produto.nome),
-                    subtitle: Text(
-                      '${formatarPreco(produto.preco)} · '
-                      'Estoque: ${produto.quantidadeEstoque}',
-                    ),
-                    onTap: () => _abrirDialogo(
-                      context,
-                      viewModel,
-                      _DialogoProduto(produto: produto),
-                    ),
-                    trailing: IconButton(
-                      tooltip: 'Registrar entrada',
-                      icon: const Icon(Icons.add_box_outlined),
-                      onPressed: () => _abrirDialogo(
+                  Card(
+                    clipBehavior: Clip.antiAlias,
+                    child: ListTile(
+                      leading: IconeProduto(
+                        produto.id,
+                        ativo: produto.quantidadeEstoque > 0,
+                      ),
+                      title: Text(
+                        produto.nome,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${formatarPreco(produto.preco)} · '
+                            'Estoque: ${produto.quantidadeEstoque}',
+                          ),
+                          if (produto.quantidadeEstoque < _estoqueBaixo)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: _AvisoEstoque(produto.quantidadeEstoque),
+                            ),
+                        ],
+                      ),
+                      onTap: () => _abrirDialogo(
                         context,
                         viewModel,
-                        _DialogoEntrada(produto: produto),
+                        _DialogoProduto(produto: produto),
+                      ),
+                      trailing: IconButton.filled(
+                        style: IconButton.styleFrom(
+                          backgroundColor: CoresDiskGas.laranjaBotao,
+                          foregroundColor: Colors.white,
+                        ),
+                        tooltip: 'Registrar entrada',
+                        icon: const Icon(Icons.add_rounded),
+                        onPressed: () => _abrirDialogo(
+                          context,
+                          viewModel,
+                          _DialogoEntrada(produto: produto),
+                        ),
                       ),
                     ),
                   ),
               ],
             ),
+    );
+  }
+}
+
+const _estoqueBaixo = 5;
+
+class _AvisoEstoque extends StatelessWidget {
+  final int quantidade;
+
+  const _AvisoEstoque(this.quantidade);
+
+  @override
+  Widget build(BuildContext context) {
+    final semEstoque = quantidade == 0;
+    final cor = semEstoque ? CoresDiskGas.vermelho : CoresDiskGas.ambar;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          semEstoque ? Icons.block_rounded : Icons.warning_amber_rounded,
+          size: 16,
+          color: cor,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          semEstoque ? 'Sem estoque' : 'Estoque baixo',
+          style: TextStyle(
+            color: cor,
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -127,6 +191,8 @@ class _DialogoProdutoState extends State<_DialogoProduto> {
       title: Text(novo ? 'Novo produto' : 'Editar produto'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 16,
         children: [
           TextField(
             controller: _nome,
@@ -145,17 +211,13 @@ class _DialogoProdutoState extends State<_DialogoProduto> {
               ),
               keyboardType: TextInputType.number,
             ),
-          MensagemErro(viewModel.erro),
+          if (viewModel.erro != null) MensagemErro(viewModel.erro),
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancelar'),
-        ),
-        FilledButton(
-          onPressed: viewModel.salvando ? null : () => _salvar(viewModel),
-          child: const Text('Salvar'),
+        BotoesDialogo(
+          confirmar: 'Salvar',
+          aoConfirmar: viewModel.salvando ? null : () => _salvar(viewModel),
         ),
       ],
     );
@@ -199,25 +261,26 @@ class _DialogoEntradaState extends State<_DialogoEntrada> {
       title: Text('Entrada de ${widget.produto.nome}'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 16,
         children: [
-          Text('Estoque atual: ${widget.produto.quantidadeEstoque}'),
+          Text(
+            'Estoque atual: ${widget.produto.quantidadeEstoque}',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
           TextField(
             controller: _quantidade,
             decoration: const InputDecoration(labelText: 'Quantidade recebida'),
             keyboardType: TextInputType.number,
             autofocus: true,
           ),
-          MensagemErro(viewModel.erro),
+          if (viewModel.erro != null) MensagemErro(viewModel.erro),
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancelar'),
-        ),
-        FilledButton(
-          onPressed: viewModel.salvando ? null : () => _salvar(viewModel),
-          child: const Text('Registrar'),
+        BotoesDialogo(
+          confirmar: 'Registrar',
+          aoConfirmar: viewModel.salvando ? null : () => _salvar(viewModel),
         ),
       ],
     );

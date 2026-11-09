@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/cliente.dart';
 import 'falhas.dart';
 
-/// US04: clientes em usuarios/{uid} e CPFs já usados em cpfs/{cpf}.
+/// US04 e US16: clientes em usuarios/{uid} e CPFs já usados em cpfs/{cpf}.
 class ClienteService {
   final FirebaseFirestore _firestore;
 
@@ -18,6 +18,20 @@ class ClienteService {
     } on FirebaseException {
       throw const FalhaConexao();
     }
+  }
+
+  Stream<List<Cliente>> observarClientes() {
+    return _firestore
+        .collection('usuarios')
+        .where('perfil', isEqualTo: 'cliente')
+        .snapshots()
+        .map(
+          (consulta) => consulta.docs
+              .map(
+                (documento) => Cliente.fromMap(documento.id, documento.data()),
+              )
+              .toList(),
+        );
   }
 
   Future<bool> cpfJaCadastrado(String cpf) async {

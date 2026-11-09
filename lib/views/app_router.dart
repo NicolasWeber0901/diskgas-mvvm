@@ -9,19 +9,23 @@ import '../services/rota_service.dart';
 import '../viewmodels/acompanhamento_viewmodel.dart';
 import '../viewmodels/cadastro_viewmodel.dart';
 import '../viewmodels/carrinho_viewmodel.dart';
+import '../viewmodels/clientes_viewmodel.dart';
 import '../viewmodels/detalhe_pedido_viewmodel.dart';
 import '../viewmodels/estoque_viewmodel.dart';
 import '../viewmodels/login_viewmodel.dart';
 import '../viewmodels/pedidos_viewmodel.dart';
+import '../viewmodels/perfil_cliente_viewmodel.dart';
 import '../viewmodels/sessao_viewmodel.dart';
 import 'acompanhamento_view.dart';
 import 'cadastro_view.dart';
 import 'carregando_view.dart';
 import 'carrinho_view.dart';
+import 'clientes_view.dart';
 import 'detalhe_pedido_view.dart';
 import 'estoque_view.dart';
 import 'login_view.dart';
 import 'pedidos_view.dart';
+import 'perfil_cliente_view.dart';
 
 /// US01 a US03: leva cada perfil à sua tela inicial.
 GoRouter criarRotas(SessaoViewModel sessao) {
@@ -102,8 +106,10 @@ GoRouter criarRotas(SessaoViewModel sessao) {
       GoRoute(
         path: '/admin',
         builder: (context, state) => ChangeNotifierProvider(
-          create: (context) =>
-              PedidosViewModel(context.read<PedidoService>())..iniciar(),
+          create: (context) => PedidosViewModel(
+            context.read<PedidoService>(),
+            context.read<ProdutoService>(),
+          )..iniciar(),
           child: const PedidosView(),
         ),
         routes: [
@@ -116,6 +122,26 @@ GoRouter criarRotas(SessaoViewModel sessao) {
                 context.read<ProdutoService>(),
               )..iniciar(state.pathParameters['id']!),
               child: const DetalhePedidoView(),
+            ),
+          ),
+          GoRoute(
+            path: 'clientes',
+            builder: (context, state) => ChangeNotifierProvider(
+              create: (context) => ClientesViewModel(
+                context.read<ClienteService>(),
+                context.read<PedidoService>(),
+              )..iniciar(),
+              child: const ClientesView(),
+            ),
+          ),
+          GoRoute(
+            path: 'clientes/:id',
+            builder: (context, state) => ChangeNotifierProvider(
+              create: (context) => PerfilClienteViewModel(
+                context.read<ClienteService>(),
+                context.read<PedidoService>(),
+              )..iniciar(state.pathParameters['id']!),
+              child: const PerfilClienteView(),
             ),
           ),
           GoRoute(
