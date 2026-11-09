@@ -16,6 +16,19 @@ abstract final class CoresDiskGas {
   static const bordaCampo = Color(0xFF8E7D72);
 }
 
+abstract final class EstilosDiskGas {
+  static const rotulo = TextStyle(
+    fontSize: 14,
+    color: CoresDiskGas.cinzaQuente,
+  );
+  static const negrito = TextStyle(fontWeight: FontWeight.w700);
+  static const valorVerde = TextStyle(
+    color: CoresDiskGas.verde,
+    fontWeight: FontWeight.w800,
+  );
+  static const raioPilula = BorderRadius.all(Radius.circular(999));
+}
+
 ThemeData criarTema() {
   final esquema =
       ColorScheme.fromSeed(

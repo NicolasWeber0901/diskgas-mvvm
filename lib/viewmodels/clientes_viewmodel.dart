@@ -7,7 +7,7 @@ import '../models/pedido.dart';
 import '../services/cliente_service.dart';
 import '../services/falhas.dart';
 import '../services/pedido_service.dart';
-import 'busca.dart';
+import 'normalizar_busca.dart';
 
 /// US16: lista de clientes com a quantidade de pedidos e a busca por nome.
 class ClientesViewModel extends ChangeNotifier {

@@ -129,11 +129,6 @@ class _Marca extends StatelessWidget {
             letterSpacing: -1.2,
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          'Seu gás e sua água entregues em casa, sem precisar ligar.',
-          style: textos.bodyLarge?.copyWith(color: CoresDiskGas.cinzaQuente),
-        ),
       ],
     );
   }

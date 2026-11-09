@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/produto.dart';
 import '../viewmodels/estoque_viewmodel.dart';
 import 'tema.dart';
+import 'widgets/abrir_dialogo.dart';
 import 'widgets/botao_sair.dart';
 import 'widgets/botoes_dialogo.dart';
 import 'widgets/estado_vazio.dart';
@@ -22,10 +23,10 @@ class EstoqueView extends StatelessWidget {
     Widget dialogo,
   ) async {
     viewModel.limparErro();
-    final mensagem = await showDialog<String>(
-      context: context,
-      builder: (context) =>
-          ChangeNotifierProvider.value(value: viewModel, child: dialogo),
+    final mensagem = await abrirDialogo<String, EstoqueViewModel>(
+      context,
+      viewModel,
+      dialogo,
     );
     viewModel.limparErro();
     if (mensagem != null && context.mounted) {
@@ -250,7 +251,7 @@ class _DialogoEntradaState extends State<_DialogoEntrada> {
     if (registrada && mounted) {
       final saldo =
           widget.produto.quantidadeEstoque + int.parse(_quantidade.text.trim());
-      Navigator.pop(context, 'Novo saldo de ${widget.produto.nome}: $saldo');
+      Navigator.pop(context, 'Novo saldo de ${widget.produto.nome}: $saldo.');
     }
   }
 

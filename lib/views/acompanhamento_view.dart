@@ -98,7 +98,7 @@ class _CartaoPedido extends StatelessWidget {
               child: Text.rich(
                 TextSpan(
                   children: [
-                    const TextSpan(text: 'Chega em até '),
+                    const TextSpan(text: 'Tempo estimado: '),
                     TextSpan(
                       text: '$tempo min',
                       style: textos.headlineSmall?.copyWith(

@@ -27,7 +27,7 @@ import 'login_view.dart';
 import 'pedidos_view.dart';
 import 'perfil_cliente_view.dart';
 
-/// US01 a US03: leva cada perfil à sua tela inicial.
+/// Rotas do app; leva cada perfil à sua tela inicial (US01 a US03).
 GoRouter criarRotas(SessaoViewModel sessao) {
   return GoRouter(
     initialLocation: '/carregando',

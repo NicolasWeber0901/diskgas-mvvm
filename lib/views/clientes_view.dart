@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../models/cliente.dart';
 import '../viewmodels/clientes_viewmodel.dart';
 import 'tema.dart';
+import 'widgets/avatar_iniciais.dart';
 import 'widgets/botao_sair.dart';
 import 'widgets/estado_vazio.dart';
 import 'widgets/formatos.dart';
@@ -18,7 +20,6 @@ class ClientesView extends StatelessWidget {
   Widget build(BuildContext context) {
     final viewModel = context.watch<ClientesViewModel>();
     final clientes = viewModel.clientesFiltrados;
-    final textos = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -54,43 +55,41 @@ class ClientesView extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 16),
                           children: [
                             for (final cliente in clientes)
-                              Card(
-                                clipBehavior: Clip.antiAlias,
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor: CoresDiskGas.laranjaBotao
-                                        .withValues(alpha: 0.14),
-                                    foregroundColor: CoresDiskGas.laranjaEscuro,
-                                    child: Text(
-                                      cliente.nome.isEmpty
-                                          ? '?'
-                                          : cliente.nome[0].toUpperCase(),
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                  title: Text(
-                                    cliente.nome,
-                                    style: textos.titleMedium,
-                                  ),
-                                  subtitle: Text(
-                                    '${formatarTelefone(cliente.telefone)}\n'
-                                    '${cliente.endereco.cidade}',
-                                  ),
-                                  trailing: _Contador(
-                                    viewModel.quantidadeDePedidos(cliente),
-                                  ),
-                                  onTap: () => context.push(
-                                    '/admin/clientes/${cliente.id}',
-                                  ),
-                                ),
+                              _CartaoCliente(
+                                cliente: cliente,
+                                pedidos: viewModel.quantidadeDePedidos(cliente),
                               ),
                           ],
                         ),
                 ),
               ],
             ),
+    );
+  }
+}
+
+class _CartaoCliente extends StatelessWidget {
+  final Cliente cliente;
+  final int pedidos;
+
+  const _CartaoCliente({required this.cliente, required this.pedidos});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        leading: AvatarIniciais(cliente.nome),
+        title: Text(
+          cliente.nome,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        subtitle: Text(
+          '${formatarTelefone(cliente.telefone)}\n${cliente.endereco.cidade}',
+        ),
+        trailing: _Contador(pedidos),
+        onTap: () => context.push('/admin/clientes/${cliente.id}'),
+      ),
     );
   }
 }
@@ -108,7 +107,7 @@ class _Contador extends StatelessWidget {
         Text('$quantidade', style: Theme.of(context).textTheme.titleLarge),
         Text(
           quantidade == 1 ? 'pedido' : 'pedidos',
-          style: const TextStyle(fontSize: 14, color: CoresDiskGas.cinzaQuente),
+          style: EstilosDiskGas.rotulo,
         ),
       ],
     );

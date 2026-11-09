@@ -37,7 +37,7 @@ class CarrinhoView extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            const Text('Entrega em:'),
+            const Text('Entregar em:'),
             Text(endereco?.textoCompleto ?? 'endereço do seu cadastro'),
           ],
         ),
@@ -218,7 +218,7 @@ class _LinhaProduto extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 color: CoresDiskGas.creme,
-                borderRadius: BorderRadius.circular(999),
+                borderRadius: EstilosDiskGas.raioPilula,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,

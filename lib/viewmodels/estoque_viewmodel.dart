@@ -23,7 +23,7 @@ class EstoqueViewModel extends ChangeNotifier {
   void iniciar() {
     _inscricao = _produtoService.observarProdutos().listen(
       (lista) {
-        produtos = comProdutosPadraoPrimeiro(lista);
+        produtos = comProdutosFixosPrimeiro(lista);
         carregando = false;
         notifyListeners();
       },
@@ -33,12 +33,12 @@ class EstoqueViewModel extends ChangeNotifier {
         notifyListeners();
       },
     );
-    _garantirProdutosPadrao();
+    _garantirProdutosFixos();
   }
 
-  Future<void> _garantirProdutosPadrao() async {
+  Future<void> _garantirProdutosFixos() async {
     try {
-      await _produtoService.garantirProdutosPadrao();
+      await _produtoService.garantirProdutosFixos();
     } on FalhaServico catch (e) {
       if (_descartado) return;
       erro = e.mensagem;

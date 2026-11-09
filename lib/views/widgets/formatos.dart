@@ -1,11 +1,14 @@
 String formatarPreco(double valor) =>
     'R\$\u00A0${valor.toStringAsFixed(2).replaceAll('.', ',')}';
 
-String formatarData(DateTime data) {
-  String doisDigitos(int valor) => valor.toString().padLeft(2, '0');
-  return '${doisDigitos(data.day)}/${doisDigitos(data.month)}/${data.year} '
-      '${doisDigitos(data.hour)}:${doisDigitos(data.minute)}';
-}
+String _doisDigitos(int valor) => valor.toString().padLeft(2, '0');
+
+String formatarDataCurta(DateTime data) =>
+    '${_doisDigitos(data.day)}/${_doisDigitos(data.month)}/${data.year}';
+
+String formatarData(DateTime data) =>
+    '${formatarDataCurta(data)} '
+    '${_doisDigitos(data.hour)}:${_doisDigitos(data.minute)}';
 
 String mascararCpf(String cpf) {
   if (cpf.length != 11) return cpf;
@@ -13,12 +16,14 @@ String mascararCpf(String cpf) {
 }
 
 String formatarTelefone(String telefone) {
-  final d = telefone.replaceAll(RegExp(r'\D'), '');
-  if (d.length == 11) {
-    return '(${d.substring(0, 2)}) ${d.substring(2, 7)}-${d.substring(7)}';
+  final digitos = telefone.replaceAll(RegExp(r'\D'), '');
+  if (digitos.length == 11) {
+    return '(${digitos.substring(0, 2)}) '
+        '${digitos.substring(2, 7)}-${digitos.substring(7)}';
   }
-  if (d.length == 10) {
-    return '(${d.substring(0, 2)}) ${d.substring(2, 6)}-${d.substring(6)}';
+  if (digitos.length == 10) {
+    return '(${digitos.substring(0, 2)}) '
+        '${digitos.substring(2, 6)}-${digitos.substring(6)}';
   }
   return telefone;
 }

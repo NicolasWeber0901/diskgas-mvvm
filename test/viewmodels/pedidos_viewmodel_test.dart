@@ -50,8 +50,7 @@ void main() {
   setUp(() async {
     pedidoService = MockPedidoService();
     final produtoService = MockProdutoService();
-    when(() => produtoService.garantirProdutosPadrao())
-        .thenAnswer((_) async {});
+    when(() => produtoService.garantirProdutosFixos()).thenAnswer((_) async {});
     when(() => pedidoService.observarTodos()).thenAnswer(
       (_) => Stream.value([
         pedido('1', 'Maria Souza', SituacaoPedido.aguardando, agora),

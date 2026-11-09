@@ -15,7 +15,7 @@ enum EstadoSessao {
   falha,
 }
 
-/// Quem está logado e com qual perfil; decide a tela inicial (US01 a US03).
+/// US01 a US03: quem está logado e com qual perfil; decide a tela inicial.
 class SessaoViewModel extends ChangeNotifier {
   final AuthService _authService;
   StreamSubscription<String?>? _inscricao;

@@ -7,7 +7,7 @@ import '../models/situacao_pedido.dart';
 import '../services/falhas.dart';
 import '../services/pedido_service.dart';
 import '../services/produto_service.dart';
-import 'busca.dart';
+import 'normalizar_busca.dart';
 
 enum PeriodoPedidos {
   hoje('Hoje'),
@@ -42,7 +42,7 @@ class PedidosViewModel extends ChangeNotifier {
   }) : _agora = agora ?? DateTime.now;
 
   void iniciar() {
-    _produtoService.garantirProdutosPadrao().onError<FalhaServico>((_, _) {});
+    _produtoService.garantirProdutosFixos().onError<FalhaServico>((_, _) {});
     _inscricao = _pedidoService.observarTodos().listen(
       (lista) {
         pedidos = [...lista]..sort(_comparar);
@@ -80,6 +80,11 @@ class PedidosViewModel extends ChangeNotifier {
 
   int get filtrosAtivos =>
       situacoes.length + (periodo == PeriodoPedidos.todos ? 0 : 1);
+
+  String get resumoFiltros => [
+    for (final situacao in situacoes) situacao.rotulo,
+    if (periodo != PeriodoPedidos.todos) periodo.rotulo,
+  ].join(' · ');
 
   bool get filtrando =>
       situacoes.isNotEmpty ||

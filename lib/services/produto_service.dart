@@ -3,13 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/produto.dart';
 import 'falhas.dart';
 
-/// US05, US06, US08 (Gás e Água fixos) e US09: produtos e estoque.
+/// US05, US06, US08 (produtos fixos) e US09: produtos e estoque.
 class ProdutoService {
   final FirebaseFirestore _firestore;
 
   ProdutoService(this._firestore);
 
-  static const produtosPadrao = [
+  static const produtosFixos = [
     Produto(id: 'gas', nome: 'Gás P13', preco: 120, quantidadeEstoque: 0),
     Produto(
       id: 'agua',
@@ -35,11 +35,11 @@ class ProdutoService {
         );
   }
 
-  Future<void> garantirProdutosPadrao() async {
+  Future<void> garantirProdutosFixos() async {
     try {
       await _firestore.runTransaction((transacao) async {
         final faltando = <Produto>[];
-        for (final produto in produtosPadrao) {
+        for (final produto in produtosFixos) {
           final documento = await transacao.get(_produtos.doc(produto.id));
           if (!documento.exists) faltando.add(produto);
         }

@@ -4,6 +4,15 @@ Aplicativo Flutter do TCC "Avaliação comparativa entre MVVM e Clean Architectu
 em Flutter" (Engenharia de Software, UDESC/CEAVI). Esta é a versão MVVM, que
 representa o sistema existente; a versão Clean é a refatoração dela.
 
+## Funcionalidades
+
+- Cliente: cadastro, login, carrinho, envio do pedido e acompanhamento.
+- Administrador: pedidos com filtros, detalhe com distância, tempo e mapa
+  da rota (`computeRoutes` da Routes API e Maps SDK for Android), aceite, recusa,
+  finalização, estoque e consulta de clientes com perfil e histórico.
+- Os produtos Gás P13 e Água mineral 20 L são criados automaticamente quando o
+  administrador entra no app, caso ainda não existam.
+
 ## Estrutura
 
 ```
@@ -35,15 +44,6 @@ O caminho das dependências é View → ViewModel → serviço.
    `{"ROUTES_API_KEY": "<chave>"}` e acrescente `MAPS_API_KEY=<chave>` ao
    `android/local.properties`. Nenhum dos dois vai para o repositório.
 8. `flutter run --dart-define-from-file=dart_defines.json`
-
-## Funcionalidades
-
-- Cliente: cadastro, login, carrinho, envio do pedido e acompanhamento.
-- Administrador: pedidos com filtros (US17), detalhe com distância, tempo e mapa
-  da rota (`computeRoutes` da Routes API e Maps SDK for Android), aceite, recusa,
-  finalização, estoque e consulta de clientes com perfil e histórico (US16).
-- Os produtos Gás P13 e Água mineral 20 L são criados automaticamente quando o
-  administrador entra no app, caso ainda não existam.
 
 ## Testes
 

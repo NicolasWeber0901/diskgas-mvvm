@@ -26,7 +26,7 @@ class SeloSituacao extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: cor.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: EstilosDiskGas.raioPilula,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

@@ -39,7 +39,7 @@ class LinhaItemPedido extends StatelessWidget {
                       ),
                       TextSpan(
                         text: item.nomeProduto,
-                        style: const TextStyle(fontWeight: FontWeight.w700),
+                        style: EstilosDiskGas.negrito,
                       ),
                     ],
                   ),
@@ -53,7 +53,7 @@ class LinhaItemPedido extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: corEntrega.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: EstilosDiskGas.raioPilula,
                     ),
                     child: Text(
                       'entregue: $entregue',
@@ -68,10 +68,7 @@ class LinhaItemPedido extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text(
-            formatarPreco(item.valorFinal),
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
+          Text(formatarPreco(item.valorFinal), style: EstilosDiskGas.negrito),
         ],
       ),
     );

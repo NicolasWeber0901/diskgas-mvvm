@@ -94,7 +94,7 @@ class DetalhePedidoViewModel extends ChangeNotifier {
     }
     final minutos = int.tryParse(minutosTexto.trim());
     if (minutos == null || minutos <= 0) {
-      return _falhar('Informe os minutos a mais, maiores que zero.');
+      return _falhar('Informe quantos minutos a mais (maior que zero).');
     }
     return _executar(() => _pedidoService.ampliarTempo(atual.id, minutos));
   }
@@ -129,8 +129,7 @@ class DetalhePedidoViewModel extends ChangeNotifier {
     }
 
     return _executar(() async {
-      // RN04: a baixa usa as quantidades entregues, que podem passar das
-      // pedidas se houver estoque.
+      // RN04: a baixa usa as quantidades entregues, mesmo acima das pedidas.
       final estoque = {
         for (final produto in await _produtoService.buscarProdutos())
           produto.id: produto.quantidadeEstoque,

@@ -6,6 +6,7 @@ import '../models/endereco.dart';
 import '../viewmodels/cadastro_viewmodel.dart';
 import '../viewmodels/sessao_viewmodel.dart';
 import 'widgets/botao_sair.dart';
+import 'widgets/formatos.dart';
 import 'widgets/mascaras.dart';
 import 'widgets/mensagem_erro.dart';
 
@@ -76,28 +77,6 @@ class _CadastroViewState extends State<CadastroView> {
     final viewModel = context.watch<CadastroViewModel>();
     final erros = viewModel.errosDosCampos;
 
-    Widget campo(
-      String nome,
-      String rotulo, {
-      TextInputType? teclado,
-      TextInputFormatter? mascara,
-      bool oculto = false,
-    }) {
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: TextField(
-          controller: _campos[nome],
-          keyboardType: teclado,
-          inputFormatters: mascara == null ? null : [mascara],
-          obscureText: oculto,
-          decoration: InputDecoration(
-            labelText: rotulo,
-            errorText: erros[nome],
-          ),
-        ),
-      );
-    }
-
     final data = _dataNascimento;
     return Scaffold(
       appBar: AppBar(
@@ -109,16 +88,22 @@ class _CadastroViewState extends State<CadastroView> {
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
-          campo('nome', 'Nome'),
-          campo(
-            'telefone',
-            'Telefone',
+          _CampoCadastro(
+            controlador: _campos['nome']!,
+            rotulo: 'Nome',
+            erro: erros['nome'],
+          ),
+          _CampoCadastro(
+            controlador: _campos['telefone']!,
+            rotulo: 'Celular',
+            erro: erros['telefone'],
             teclado: TextInputType.phone,
             mascara: MascaraNumerica.telefone,
           ),
-          campo(
-            'cpf',
-            'CPF',
+          _CampoCadastro(
+            controlador: _campos['cpf']!,
+            rotulo: 'CPF',
+            erro: erros['cpf'],
             teclado: TextInputType.number,
             mascara: MascaraNumerica.cpf,
           ),
@@ -132,23 +117,45 @@ class _CadastroViewState extends State<CadastroView> {
                   errorText: erros['dataNascimento'],
                 ),
                 child: Text(
-                  data == null
-                      ? 'Selecionar'
-                      : '${data.day.toString().padLeft(2, '0')}/'
-                            '${data.month.toString().padLeft(2, '0')}/'
-                            '${data.year}',
+                  data == null ? 'Selecionar' : formatarDataCurta(data),
                 ),
               ),
             ),
           ),
           Text('Endereço', style: Theme.of(context).textTheme.titleMedium),
-          campo('rua', 'Rua'),
-          campo('numero', 'Número'),
-          campo('bairro', 'Bairro'),
-          campo('cidade', 'Cidade'),
+          _CampoCadastro(
+            controlador: _campos['rua']!,
+            rotulo: 'Rua',
+            erro: erros['rua'],
+          ),
+          _CampoCadastro(
+            controlador: _campos['numero']!,
+            rotulo: 'Número',
+            erro: erros['numero'],
+          ),
+          _CampoCadastro(
+            controlador: _campos['bairro']!,
+            rotulo: 'Bairro',
+            erro: erros['bairro'],
+          ),
+          _CampoCadastro(
+            controlador: _campos['cidade']!,
+            rotulo: 'Cidade',
+            erro: erros['cidade'],
+          ),
           if (!viewModel.completandoCadastro) ...[
-            campo('email', 'E-mail', teclado: TextInputType.emailAddress),
-            campo('senha', 'Senha', oculto: true),
+            _CampoCadastro(
+              controlador: _campos['email']!,
+              rotulo: 'E-mail',
+              erro: erros['email'],
+              teclado: TextInputType.emailAddress,
+            ),
+            _CampoCadastro(
+              controlador: _campos['senha']!,
+              rotulo: 'Senha',
+              erro: erros['senha'],
+              oculto: true,
+            ),
           ],
           MensagemErro(viewModel.erro),
           FilledButton(
@@ -158,6 +165,39 @@ class _CadastroViewState extends State<CadastroView> {
             child: const Text('Cadastrar'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _CampoCadastro extends StatelessWidget {
+  final TextEditingController controlador;
+  final String rotulo;
+  final String? erro;
+  final TextInputType? teclado;
+  final TextInputFormatter? mascara;
+  final bool oculto;
+
+  const _CampoCadastro({
+    required this.controlador,
+    required this.rotulo,
+    required this.erro,
+    this.teclado,
+    this.mascara,
+    this.oculto = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final mascara = this.mascara;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: TextField(
+        controller: controlador,
+        keyboardType: teclado,
+        inputFormatters: mascara == null ? null : [mascara],
+        obscureText: oculto,
+        decoration: InputDecoration(labelText: rotulo, errorText: erro),
       ),
     );
   }

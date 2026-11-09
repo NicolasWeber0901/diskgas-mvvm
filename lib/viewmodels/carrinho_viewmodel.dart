@@ -42,7 +42,7 @@ class CarrinhoViewModel extends ChangeNotifier {
   void iniciar() {
     _inscricao = _produtoService.observarProdutos().listen(
       (lista) {
-        produtos = comProdutosPadraoPrimeiro(lista);
+        produtos = comProdutosFixosPrimeiro(lista);
         carregando = false;
         notifyListeners();
       },
@@ -114,8 +114,7 @@ class CarrinhoViewModel extends ChangeNotifier {
       final uid = _authService.uidAtual!;
       final cliente = await _clienteService.buscar(uid);
 
-      // RN02: o pedido vai para o endereço cadastrado, que precisa estar
-      // completo.
+      // RN02: o endereço cadastrado precisa estar completo.
       final endereco = cliente?.endereco;
       if (cliente == null ||
           endereco!.rua.trim().isEmpty ||

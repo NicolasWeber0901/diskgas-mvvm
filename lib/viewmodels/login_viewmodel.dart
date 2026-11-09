@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../services/auth_service.dart';
 import '../services/falhas.dart';
 
-/// US01 e US02. A tela inicial de cada perfil é escolhida pela sessão.
+/// US01 e US02: login; a tela inicial de cada perfil é escolhida pela sessão.
 class LoginViewModel extends ChangeNotifier {
   final AuthService _authService;
   bool _descartado = false;
