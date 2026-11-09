@@ -7,6 +7,7 @@ class MascaraNumerica extends TextInputFormatter {
 
   static const telefone = MascaraNumerica('(##) #####-####');
   static const cpf = MascaraNumerica('###.###.###-##');
+  static const data = MascaraNumerica('##/##/####');
 
   @override
   TextEditingValue formatEditUpdate(

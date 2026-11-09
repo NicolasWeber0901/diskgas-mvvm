@@ -7,11 +7,13 @@ import '../models/situacao_pedido.dart';
 import '../viewmodels/acompanhamento_viewmodel.dart';
 import 'tema.dart';
 import 'widgets/botao_sair.dart';
+import 'widgets/entrada_animada.dart';
 import 'widgets/estado_vazio.dart';
 import 'widgets/formatos.dart';
 import 'widgets/linha_item_pedido.dart';
 import 'widgets/mensagem_erro.dart';
 import 'widgets/selo_situacao.dart';
+import 'widgets/troca_suave.dart';
 
 /// Acompanhamento dos pedidos do cliente (US07).
 class AcompanhamentoView extends StatelessWidget {
@@ -26,22 +28,27 @@ class AcompanhamentoView extends StatelessWidget {
         title: const Text('Meus pedidos'),
         actions: const [BotaoSair()],
       ),
-      body: viewModel.carregando
-          ? const Center(child: CircularProgressIndicator())
-          : viewModel.erro != null
-          ? Center(child: MensagemErro(viewModel.erro))
-          : viewModel.pedidos.isEmpty
-          ? const EstadoVazio(
-              icone: Icons.receipt_long_outlined,
-              mensagem: 'Você ainda não fez nenhum pedido.',
-            )
-          : ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              children: [
-                for (final pedido in viewModel.pedidos)
-                  _CartaoPedido(pedido: pedido),
-              ],
-            ),
+      body: TrocaSuave(
+        child: viewModel.carregando
+            ? const Center(child: CircularProgressIndicator())
+            : viewModel.erro != null
+            ? Center(child: MensagemErro(viewModel.erro))
+            : viewModel.pedidos.isEmpty
+            ? const EstadoVazio(
+                icone: Icons.receipt_long_outlined,
+                mensagem: 'Você ainda não fez nenhum pedido.',
+              )
+            : ListView(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                children: [
+                  for (final (indice, pedido) in viewModel.pedidos.indexed)
+                    EntradaAnimada(
+                      ordem: indice,
+                      child: _CartaoPedido(pedido: pedido),
+                    ),
+                ],
+              ),
+      ),
     );
   }
 }
@@ -137,6 +144,7 @@ class _LinhaDoTempo extends StatelessWidget {
       SituacaoPedido.entregue,
     ];
     final atual = etapas.indexOf(situacao);
+    final duracao = MovimentoDiskGas.duracao(context, MovimentoDiskGas.lento);
     Color corDoTraco(bool visivel, bool feito) => !visivel
         ? Colors.transparent
         : feito
@@ -152,12 +160,14 @@ class _LinhaDoTempo extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: Container(
+                      child: AnimatedContainer(
+                        duration: duracao,
                         height: 3,
                         color: corDoTraco(i > 0, i <= atual),
                       ),
                     ),
-                    Container(
+                    AnimatedContainer(
+                      duration: duracao,
                       width: 18,
                       height: 18,
                       decoration: BoxDecoration(
@@ -174,7 +184,8 @@ class _LinhaDoTempo extends StatelessWidget {
                       ),
                     ),
                     Expanded(
-                      child: Container(
+                      child: AnimatedContainer(
+                        duration: duracao,
                         height: 3,
                         color: corDoTraco(i < etapas.length - 1, i < atual),
                       ),

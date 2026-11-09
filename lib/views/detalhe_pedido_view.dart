@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -90,7 +91,11 @@ class DetalhePedidoView extends StatelessWidget {
                     rotulo: 'Tempo estimado (min)',
                     confirmar: 'Aceitar',
                     numerico: true,
-                    acao: viewModel.aceitar,
+                    acao: (tempo) async {
+                      final aceito = await viewModel.aceitar(tempo);
+                      if (aceito) HapticFeedback.mediumImpact();
+                      return aceito;
+                    },
                   ),
                 )
               : null,

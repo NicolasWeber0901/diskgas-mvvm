@@ -79,6 +79,34 @@ class CadastroViewModel extends ChangeNotifier {
     }
   }
 
+  bool validarCampos(
+    Set<String> campos, {
+    required String nome,
+    required String telefone,
+    required String cpf,
+    required DateTime? dataNascimento,
+    required Endereco endereco,
+    String email = '',
+    String senha = '',
+  }) {
+    final erros = _validar(
+      nome: nome.trim(),
+      telefone: telefone.trim(),
+      cpf: cpf.replaceAll(RegExp(r'\D'), ''),
+      dataNascimento: dataNascimento,
+      endereco: endereco,
+      email: email.trim(),
+      senha: senha,
+    );
+    errosDosCampos = {
+      for (final erro in erros.entries)
+        if (campos.contains(erro.key)) erro.key: erro.value,
+    };
+    erro = null;
+    notifyListeners();
+    return errosDosCampos.isEmpty;
+  }
+
   Map<String, String> _validar({
     required String nome,
     required String telefone,

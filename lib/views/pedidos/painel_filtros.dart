@@ -43,9 +43,20 @@ class _PainelFiltrosState extends State<PainelFiltros> {
           TextField(
             controller: _busca,
             onChanged: viewModel.buscar,
-            decoration: const InputDecoration(
+            textInputAction: TextInputAction.search,
+            decoration: InputDecoration(
               hintText: 'Buscar pelo nome do cliente',
-              prefixIcon: Icon(Icons.search),
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: _busca.text.isEmpty
+                  ? null
+                  : IconButton(
+                      tooltip: 'Limpar busca',
+                      icon: const Icon(Icons.close_rounded),
+                      onPressed: () {
+                        _busca.clear();
+                        viewModel.buscar('');
+                      },
+                    ),
             ),
           ),
           Container(

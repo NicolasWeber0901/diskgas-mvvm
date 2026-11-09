@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 
 import '../viewmodels/login_viewmodel.dart';
 import 'tema.dart';
+import 'widgets/botao_carregando.dart';
+import 'widgets/campo_senha.dart';
+import 'widgets/entrada_animada.dart';
 import 'widgets/mensagem_erro.dart';
 
 /// US01 e US02.
@@ -25,6 +28,12 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
+  void _entrar(LoginViewModel viewModel) {
+    if (viewModel.carregando) return;
+    FocusScope.of(context).unfocus();
+    viewModel.entrarComEmail(_email.text, _senha.text);
+  }
+
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<LoginViewModel>();
@@ -33,45 +42,65 @@ class _LoginViewState extends State<LoginView> {
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const _Marca(),
-                const SizedBox(height: 36),
-                TextField(
-                  controller: _email,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(labelText: 'E-mail'),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _senha,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Senha'),
-                ),
-                MensagemErro(viewModel.erro),
-                const SizedBox(height: 12),
-                FilledButton(
-                  onPressed: viewModel.carregando
-                      ? null
-                      : () =>
-                            viewModel.entrarComEmail(_email.text, _senha.text),
-                  child: const Text('Entrar'),
-                ),
-                const SizedBox(height: 8),
-                OutlinedButton.icon(
-                  onPressed: viewModel.carregando
-                      ? null
-                      : viewModel.entrarComGoogle,
-                  icon: const Icon(Icons.account_circle),
-                  label: const Text('Entrar com a conta Google'),
-                ),
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: () => context.push('/cadastro'),
-                  child: const Text('Ainda não tem cadastro? Cadastre-se'),
-                ),
-              ],
+            child: AutofillGroup(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const EntradaAnimada(child: _Marca()),
+                  const SizedBox(height: 36),
+                  EntradaAnimada(
+                    ordem: 1,
+                    child: TextField(
+                      controller: _email,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.email],
+                      decoration: const InputDecoration(
+                        labelText: 'E-mail',
+                        prefixIcon: Icon(Icons.alternate_email_rounded),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  EntradaAnimada(
+                    ordem: 2,
+                    child: CampoSenha(
+                      controlador: _senha,
+                      dicaAutomatica: AutofillHints.password,
+                      aoEnviar: () => _entrar(viewModel),
+                    ),
+                  ),
+                  MensagemErro(viewModel.erro),
+                  const SizedBox(height: 12),
+                  EntradaAnimada(
+                    ordem: 3,
+                    child: BotaoCarregando(
+                      rotulo: 'Entrar',
+                      carregando: viewModel.carregando,
+                      aoPressionar: () => _entrar(viewModel),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  EntradaAnimada(
+                    ordem: 4,
+                    child: OutlinedButton.icon(
+                      onPressed: viewModel.carregando
+                          ? null
+                          : viewModel.entrarComGoogle,
+                      icon: const Icon(Icons.account_circle),
+                      label: const Text('Entrar com a conta Google'),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  EntradaAnimada(
+                    ordem: 5,
+                    child: TextButton(
+                      onPressed: () => context.push('/cadastro'),
+                      child: const Text('Ainda não tem cadastro? Cadastre-se'),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -15,6 +15,16 @@ class BlocoRota extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final duracao = MovimentoDiskGas.duracao(context, MovimentoDiskGas.lento);
+    return AnimatedSize(
+      duration: duracao,
+      curve: MovimentoDiskGas.curva,
+      alignment: Alignment.topCenter,
+      child: AnimatedSwitcher(duration: duracao, child: _conteudo()),
+    );
+  }
+
+  Widget _conteudo() {
     final deslocamento = pedido.deslocamento;
     if (viewModel.calculandoRota) {
       return const Row(

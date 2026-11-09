@@ -29,6 +29,45 @@ abstract final class EstilosDiskGas {
   static const raioPilula = BorderRadius.all(Radius.circular(999));
 }
 
+abstract final class MovimentoDiskGas {
+  static const rapido = Duration(milliseconds: 150);
+  static const medio = Duration(milliseconds: 220);
+  static const tela = Duration(milliseconds: 250);
+  static const lento = Duration(milliseconds: 300);
+  static const curva = Curves.easeOutCubic;
+
+  static Duration duracao(BuildContext context, Duration normal) =>
+      MediaQuery.disableAnimationsOf(context) ? Duration.zero : normal;
+}
+
+class TransicaoDeTela extends PageTransitionsBuilder {
+  const TransicaoDeTela();
+
+  @override
+  Duration get transitionDuration => MovimentoDiskGas.tela;
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    if (MediaQuery.disableAnimationsOf(context)) return child;
+    final curva = CurveTween(curve: MovimentoDiskGas.curva);
+    return FadeTransition(
+      opacity: animation.drive(curva),
+      child: SlideTransition(
+        position: animation.drive(
+          Tween(begin: const Offset(0, 0.03), end: Offset.zero).chain(curva),
+        ),
+        child: child,
+      ),
+    );
+  }
+}
+
 ThemeData criarTema() {
   final esquema =
       ColorScheme.fromSeed(
@@ -65,6 +104,12 @@ ThemeData criarTema() {
 
   return base.copyWith(
     scaffoldBackgroundColor: CoresDiskGas.creme,
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: TransicaoDeTela(),
+        TargetPlatform.iOS: TransicaoDeTela(),
+      },
+    ),
     textTheme: textos.copyWith(
       headlineSmall: textos.headlineSmall?.copyWith(
         fontWeight: FontWeight.w800,

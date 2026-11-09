@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/pedido.dart';
@@ -104,6 +105,7 @@ class _DialogoEntregaState extends State<DialogoEntrega> {
       for (final entrada in _quantidades.entries)
         entrada.key: entrada.value.text,
     });
+    if (finalizado) HapticFeedback.mediumImpact();
     if (finalizado && mounted) Navigator.pop(context);
   }
 

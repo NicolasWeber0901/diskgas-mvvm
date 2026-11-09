@@ -22,26 +22,30 @@ class SeloSituacao extends StatelessWidget {
       SituacaoPedido.entregue => (CoresDiskGas.verde, Icons.check_rounded),
       SituacaoPedido.recusado => (CoresDiskGas.vermelho, Icons.close_rounded),
     };
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: cor.withValues(alpha: 0.12),
-        borderRadius: EstilosDiskGas.raioPilula,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icone, size: 16, color: cor),
-          const SizedBox(width: 4),
-          Text(
-            situacao.rotulo,
-            style: TextStyle(
-              color: cor,
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
+    return AnimatedSwitcher(
+      duration: MovimentoDiskGas.duracao(context, MovimentoDiskGas.medio),
+      child: Container(
+        key: ValueKey(situacao),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: cor.withValues(alpha: 0.12),
+          borderRadius: EstilosDiskGas.raioPilula,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icone, size: 16, color: cor),
+            const SizedBox(width: 4),
+            Text(
+              situacao.rotulo,
+              style: TextStyle(
+                color: cor,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

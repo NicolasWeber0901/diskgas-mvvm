@@ -1,16 +1,25 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../models/produto.dart';
 import '../viewmodels/carrinho_viewmodel.dart';
 import 'tema.dart';
+import 'widgets/botao_carregando.dart';
 import 'widgets/botao_sair.dart';
 import 'widgets/botoes_dialogo.dart';
+import 'widgets/entrada_animada.dart';
 import 'widgets/estado_vazio.dart';
 import 'widgets/formatos.dart';
 import 'widgets/icone_produto.dart';
 import 'widgets/mensagem_erro.dart';
+import 'widgets/texto_animado.dart';
+import 'widgets/troca_suave.dart';
+
+const _tempoDaConfirmacao = Duration(milliseconds: 1100);
 
 /// Tela inicial do cliente: montar o carrinho e enviar o pedido (US05, US06).
 class CarrinhoView extends StatelessWidget {
@@ -53,7 +62,19 @@ class CarrinhoView extends StatelessWidget {
     );
     if (confirmado != true) return;
     final id = await viewModel.enviarPedido();
-    if (id != null && context.mounted) context.go('/cliente/pedidos');
+    if (id == null || !context.mounted) return;
+    HapticFeedback.mediumImpact();
+    final navegador = Navigator.of(context);
+    unawaited(
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const _PedidoEnviado(),
+      ),
+    );
+    await Future<void>.delayed(_tempoDaConfirmacao);
+    navegador.pop();
+    if (context.mounted) context.go('/cliente/pedidos');
   }
 
   @override
@@ -71,21 +92,29 @@ class CarrinhoView extends StatelessWidget {
           const BotaoSair(),
         ],
       ),
-      body: viewModel.carregando
-          ? const Center(child: CircularProgressIndicator())
-          : viewModel.produtos.isEmpty
-          ? const EstadoVazio(
-              icone: Icons.inventory_2_outlined,
-              mensagem: 'Nenhum produto cadastrado.',
-            )
-          : ListView(
-              padding: const EdgeInsets.only(top: 4, bottom: 16),
-              children: [
-                _BlocoEntrega(viewModel.enderecoEntrega?.textoCompleto),
-                for (final produto in viewModel.produtos)
-                  _LinhaProduto(produto: produto, viewModel: viewModel),
-              ],
-            ),
+      body: TrocaSuave(
+        child: viewModel.carregando
+            ? const Center(child: CircularProgressIndicator())
+            : viewModel.produtos.isEmpty
+            ? const EstadoVazio(
+                icone: Icons.inventory_2_outlined,
+                mensagem: 'Nenhum produto cadastrado.',
+              )
+            : ListView(
+                padding: const EdgeInsets.only(top: 4, bottom: 16),
+                children: [
+                  _BlocoEntrega(viewModel.enderecoEntrega?.textoCompleto),
+                  for (final (indice, produto) in viewModel.produtos.indexed)
+                    EntradaAnimada(
+                      ordem: indice,
+                      child: _LinhaProduto(
+                        produto: produto,
+                        viewModel: viewModel,
+                      ),
+                    ),
+                ],
+              ),
+      ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -108,29 +137,72 @@ class CarrinhoView extends StatelessWidget {
                           ?.copyWith(color: CoresDiskGas.cinzaQuente),
                     ),
                     const Spacer(),
-                    Text(
+                    TextoAnimado(
                       formatarPreco(viewModel.valorTotal),
-                      style: Theme.of(context).textTheme.headlineSmall,
+                      estilo: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                FilledButton(
-                  onPressed: viewModel.enviando || viewModel.itens.isEmpty
+                BotaoCarregando(
+                  rotulo: 'Enviar pedido',
+                  carregando: viewModel.enviando,
+                  aoPressionar: viewModel.itens.isEmpty
                       ? null
                       : () => _enviar(context, viewModel),
-                  child: viewModel.enviando
-                      ? const SizedBox.square(
-                          dimension: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Text('Enviar pedido'),
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PedidoEnviado extends StatelessWidget {
+  const _PedidoEnviado();
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      child: AlertDialog(
+        content: Semantics(
+          liveRegion: true,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: 1),
+                duration: MovimentoDiskGas.duracao(
+                  context,
+                  MovimentoDiskGas.lento,
+                ),
+                curve: MovimentoDiskGas.curva,
+                builder: (context, valor, filho) => Opacity(
+                  opacity: valor,
+                  child: Transform.scale(
+                    scale: 0.7 + 0.3 * valor,
+                    child: filho,
+                  ),
+                ),
+                child: const CircleAvatar(
+                  radius: 36,
+                  backgroundColor: CoresDiskGas.verde,
+                  child: Icon(
+                    Icons.check_rounded,
+                    color: Colors.white,
+                    size: 44,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Pedido enviado',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ],
           ),
         ),
       ),
@@ -191,6 +263,12 @@ class _LinhaProduto extends StatelessWidget {
     final disponivel = produto.quantidadeEstoque > 0;
     final textos = Theme.of(context).textTheme;
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: quantidade > 0
+            ? const BorderSide(color: CoresDiskGas.laranjaBotao, width: 2)
+            : const BorderSide(color: CoresDiskGas.areia),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
@@ -235,10 +313,9 @@ class _LinhaProduto extends StatelessWidget {
                   ),
                   ConstrainedBox(
                     constraints: const BoxConstraints(minWidth: 28),
-                    child: Text(
+                    child: TextoAnimado(
                       '$quantidade',
-                      textAlign: TextAlign.center,
-                      style: textos.titleMedium,
+                      estilo: textos.titleMedium,
                     ),
                   ),
                   IconButton(

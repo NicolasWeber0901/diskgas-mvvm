@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../tema.dart';
+
 class MensagemErro extends StatelessWidget {
   final String? mensagem;
 
@@ -7,14 +9,21 @@ class MensagemErro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (mensagem == null) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(
-        mensagem!,
-        style: TextStyle(color: Theme.of(context).colorScheme.error),
-        textAlign: TextAlign.center,
-      ),
+    final texto = mensagem;
+    return AnimatedSize(
+      duration: MovimentoDiskGas.duracao(context, MovimentoDiskGas.rapido),
+      curve: MovimentoDiskGas.curva,
+      alignment: Alignment.topCenter,
+      child: texto == null
+          ? const SizedBox(width: double.infinity)
+          : Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                texto,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+                textAlign: TextAlign.center,
+              ),
+            ),
     );
   }
 }

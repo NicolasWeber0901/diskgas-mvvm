@@ -7,11 +7,13 @@ import 'tema.dart';
 import 'widgets/abrir_dialogo.dart';
 import 'widgets/botao_sair.dart';
 import 'widgets/botoes_dialogo.dart';
+import 'widgets/entrada_animada.dart';
 import 'widgets/estado_vazio.dart';
 import 'widgets/formatos.dart';
 import 'widgets/icone_produto.dart';
 import 'widgets/mensagem_erro.dart';
 import 'widgets/navegacao_admin.dart';
+import 'widgets/troca_suave.dart';
 
 /// Tela de estoque do administrador (US08 e US09).
 class EstoqueView extends StatelessWidget {
@@ -51,66 +53,73 @@ class EstoqueView extends StatelessWidget {
         icon: const Icon(Icons.add),
         label: const Text('Novo produto'),
       ),
-      body: viewModel.carregando
-          ? const Center(child: CircularProgressIndicator())
-          : viewModel.produtos.isEmpty
-          ? viewModel.erro != null
-                ? Center(child: MensagemErro(viewModel.erro))
-                : const EstadoVazio(
-                    icone: Icons.inventory_2_outlined,
-                    mensagem: 'Nenhum produto cadastrado.',
-                  )
-          : ListView(
-              padding: const EdgeInsets.only(top: 8, bottom: 96),
-              children: [
-                for (final produto in viewModel.produtos)
-                  Card(
-                    clipBehavior: Clip.antiAlias,
-                    child: ListTile(
-                      leading: IconeProduto(
-                        produto.id,
-                        ativo: produto.quantidadeEstoque > 0,
-                      ),
-                      title: Text(
-                        produto.nome,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${formatarPreco(produto.preco)} · '
-                            'Estoque: ${produto.quantidadeEstoque}',
+      body: TrocaSuave(
+        child: viewModel.carregando
+            ? const Center(child: CircularProgressIndicator())
+            : viewModel.produtos.isEmpty
+            ? viewModel.erro != null
+                  ? Center(child: MensagemErro(viewModel.erro))
+                  : const EstadoVazio(
+                      icone: Icons.inventory_2_outlined,
+                      mensagem: 'Nenhum produto cadastrado.',
+                    )
+            : ListView(
+                padding: const EdgeInsets.only(top: 8, bottom: 96),
+                children: [
+                  for (final (indice, produto) in viewModel.produtos.indexed)
+                    EntradaAnimada(
+                      ordem: indice,
+                      child: Card(
+                        clipBehavior: Clip.antiAlias,
+                        child: ListTile(
+                          leading: IconeProduto(
+                            produto.id,
+                            ativo: produto.quantidadeEstoque > 0,
                           ),
-                          if (produto.quantidadeEstoque < _estoqueBaixo)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: _AvisoEstoque(produto.quantidadeEstoque),
+                          title: Text(
+                            produto.nome,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${formatarPreco(produto.preco)} · '
+                                'Estoque: ${produto.quantidadeEstoque}',
+                              ),
+                              if (produto.quantidadeEstoque < _estoqueBaixo)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: _AvisoEstoque(
+                                    produto.quantidadeEstoque,
+                                  ),
+                                ),
+                            ],
+                          ),
+                          onTap: () => _abrirDialogo(
+                            context,
+                            viewModel,
+                            _DialogoProduto(produto: produto),
+                          ),
+                          trailing: IconButton.filled(
+                            style: IconButton.styleFrom(
+                              backgroundColor: CoresDiskGas.laranjaBotao,
+                              foregroundColor: Colors.white,
                             ),
-                        ],
-                      ),
-                      onTap: () => _abrirDialogo(
-                        context,
-                        viewModel,
-                        _DialogoProduto(produto: produto),
-                      ),
-                      trailing: IconButton.filled(
-                        style: IconButton.styleFrom(
-                          backgroundColor: CoresDiskGas.laranjaBotao,
-                          foregroundColor: Colors.white,
-                        ),
-                        tooltip: 'Registrar entrada',
-                        icon: const Icon(Icons.add_rounded),
-                        onPressed: () => _abrirDialogo(
-                          context,
-                          viewModel,
-                          _DialogoEntrada(produto: produto),
+                            tooltip: 'Registrar entrada',
+                            icon: const Icon(Icons.add_rounded),
+                            onPressed: () => _abrirDialogo(
+                              context,
+                              viewModel,
+                              _DialogoEntrada(produto: produto),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 }
