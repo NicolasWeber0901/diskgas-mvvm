@@ -12,6 +12,7 @@ import '../services/cliente_service.dart';
 import '../services/falhas.dart';
 import '../services/pedido_service.dart';
 import '../services/produto_service.dart';
+import 'ordem_produtos.dart';
 
 typedef ItemCarrinho = ({Produto produto, int quantidade});
 
@@ -41,7 +42,7 @@ class CarrinhoViewModel extends ChangeNotifier {
   void iniciar() {
     _inscricao = _produtoService.observarProdutos().listen(
       (lista) {
-        produtos = lista;
+        produtos = comProdutosPadraoPrimeiro(lista);
         carregando = false;
         notifyListeners();
       },

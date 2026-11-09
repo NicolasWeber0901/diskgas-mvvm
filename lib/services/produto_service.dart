@@ -3,11 +3,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/produto.dart';
 import 'falhas.dart';
 
-/// US05, US06, US08 e US09: produtos e estoque, em produtos/{id}.
+/// US05, US06, US08 (Gás e Água fixos) e US09: produtos e estoque.
 class ProdutoService {
   final FirebaseFirestore _firestore;
 
   ProdutoService(this._firestore);
+
+  static const produtosPadrao = [
+    Produto(id: 'gas', nome: 'Gás P13', preco: 120, quantidadeEstoque: 0),
+    Produto(
+      id: 'agua',
+      nome: 'Água mineral 20 L',
+      preco: 15,
+      quantidadeEstoque: 0,
+    ),
+  ];
 
   CollectionReference<Map<String, dynamic>> get _produtos =>
       _firestore.collection('produtos');
@@ -23,6 +33,23 @@ class ProdutoService {
               )
               .toList(),
         );
+  }
+
+  Future<void> garantirProdutosPadrao() async {
+    try {
+      await _firestore.runTransaction((transacao) async {
+        final faltando = <Produto>[];
+        for (final produto in produtosPadrao) {
+          final documento = await transacao.get(_produtos.doc(produto.id));
+          if (!documento.exists) faltando.add(produto);
+        }
+        for (final produto in faltando) {
+          transacao.set(_produtos.doc(produto.id), produto.toMap());
+        }
+      });
+    } on FirebaseException {
+      throw const FalhaConexao();
+    }
   }
 
   Future<List<Produto>> buscarProdutos() async {

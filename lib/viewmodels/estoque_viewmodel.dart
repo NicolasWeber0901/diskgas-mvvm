@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../models/produto.dart';
 import '../services/falhas.dart';
 import '../services/produto_service.dart';
+import 'ordem_produtos.dart';
 
 /// US08 e US09: cadastro e edição de produtos e entrada no estoque.
 class EstoqueViewModel extends ChangeNotifier {
@@ -22,7 +23,7 @@ class EstoqueViewModel extends ChangeNotifier {
   void iniciar() {
     _inscricao = _produtoService.observarProdutos().listen(
       (lista) {
-        produtos = lista;
+        produtos = comProdutosPadraoPrimeiro(lista);
         carregando = false;
         notifyListeners();
       },
@@ -32,6 +33,17 @@ class EstoqueViewModel extends ChangeNotifier {
         notifyListeners();
       },
     );
+    _garantirProdutosPadrao();
+  }
+
+  Future<void> _garantirProdutosPadrao() async {
+    try {
+      await _produtoService.garantirProdutosPadrao();
+    } on FalhaServico catch (e) {
+      if (_descartado) return;
+      erro = e.mensagem;
+      notifyListeners();
+    }
   }
 
   Future<bool> salvarProduto({
