@@ -134,6 +134,10 @@ class EstoqueView extends StatelessWidget {
 
 const _estoqueBaixo = 5;
 
+void _limparErro(EstoqueViewModel viewModel) {
+  if (viewModel.erro != null) viewModel.limparErro();
+}
+
 class _AvisoEstoque extends StatelessWidget {
   final int quantidade;
 
@@ -215,11 +219,13 @@ class _DialogoProdutoState extends State<_DialogoProduto> {
           TextField(
             controller: _nome,
             decoration: const InputDecoration(labelText: 'Nome'),
+            onChanged: (_) => _limparErro(viewModel),
           ),
           TextField(
             controller: _preco,
             decoration: const InputDecoration(labelText: 'Preço (R\$)'),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            onChanged: (_) => _limparErro(viewModel),
           ),
           if (novo)
             TextField(
@@ -228,8 +234,9 @@ class _DialogoProdutoState extends State<_DialogoProduto> {
                 labelText: 'Quantidade inicial',
               ),
               keyboardType: TextInputType.number,
+              onChanged: (_) => _limparErro(viewModel),
             ),
-          if (viewModel.erro != null) MensagemErro(viewModel.erro),
+          MensagemErro(viewModel.erro, reservarEspaco: true),
         ],
       ),
       actions: [
@@ -291,8 +298,9 @@ class _DialogoEntradaState extends State<_DialogoEntrada> {
             decoration: const InputDecoration(labelText: 'Quantidade recebida'),
             keyboardType: TextInputType.number,
             autofocus: true,
+            onChanged: (_) => _limparErro(viewModel),
           ),
-          if (viewModel.erro != null) MensagemErro(viewModel.erro),
+          MensagemErro(viewModel.erro, reservarEspaco: true),
         ],
       ),
       actions: [

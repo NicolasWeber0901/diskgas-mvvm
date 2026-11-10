@@ -1,5 +1,11 @@
-String formatarPreco(double valor) =>
-    'R\$\u00A0${valor.toStringAsFixed(2).replaceAll('.', ',')}';
+String formatarPreco(double valor) {
+  final partes = valor.toStringAsFixed(2).split('.');
+  final inteiro = partes.first.replaceAllMapped(
+    RegExp(r'(\d)(?=(\d{3})+$)'),
+    (grupo) => '${grupo[1]}.',
+  );
+  return 'R\$\u00A0$inteiro,${partes.last}';
+}
 
 String _doisDigitos(int valor) => valor.toString().padLeft(2, '0');
 

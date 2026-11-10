@@ -62,8 +62,11 @@ class _DialogoTextoState extends State<DialogoTexto> {
             maxLines: widget.numerico ? 1 : 3,
             minLines: 1,
             autofocus: true,
+            onChanged: (_) {
+              if (viewModel.erro != null) viewModel.limparErro();
+            },
           ),
-          if (viewModel.erro != null) MensagemErro(viewModel.erro),
+          MensagemErro(viewModel.erro, reservarEspaco: true),
         ],
       ),
       actions: [
@@ -128,8 +131,11 @@ class _DialogoEntregaState extends State<DialogoEntrega> {
                       '${item.nomeProduto} (pedido: ${item.quantidadePedida})',
                 ),
                 keyboardType: TextInputType.number,
+                onChanged: (_) {
+                  if (viewModel.erro != null) viewModel.limparErro();
+                },
               ),
-            if (viewModel.erro != null) MensagemErro(viewModel.erro),
+            MensagemErro(viewModel.erro, reservarEspaco: true),
           ],
         ),
       ),

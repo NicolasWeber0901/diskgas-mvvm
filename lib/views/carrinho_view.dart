@@ -238,9 +238,13 @@ class _BlocoEntrega extends StatelessWidget {
                     color: CoresDiskGas.cinzaQuente,
                   ),
                 ),
-                Text(
-                  endereco ?? 'Endereço do seu cadastro',
-                  style: textos.titleMedium,
+                AnimatedOpacity(
+                  opacity: endereco == null ? 0 : 1,
+                  duration: MovimentoDiskGas.duracao(
+                    context,
+                    MovimentoDiskGas.medio,
+                  ),
+                  child: Text(endereco ?? ' ', style: textos.titleMedium),
                 ),
               ],
             ),

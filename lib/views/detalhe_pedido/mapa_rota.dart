@@ -10,6 +10,7 @@ import '../../models/coordenada.dart';
 import '../tema.dart';
 
 const _esperaParaEnquadrar = Duration(milliseconds: 300);
+const _tentativasDeEnquadrar = 4;
 
 class MapaRota extends StatefulWidget {
   final List<Coordenada> rota;
@@ -31,13 +32,17 @@ class _MapaRotaState extends State<MapaRota> {
     );
   }
 
-  void _enquadrar(GoogleMapController controlador) {
+  void _enquadrar(GoogleMapController controlador, [int tentativa = 1]) {
     if (widget.rota.length < 2) return;
-    Future<void>.delayed(_esperaParaEnquadrar, () {
+    Future<void>.delayed(_esperaParaEnquadrar * tentativa, () {
       if (!mounted) return;
       controlador
           .animateCamera(CameraUpdate.newLatLngBounds(_limites(), 48))
-          .onError<PlatformException>((_, _) {});
+          .onError<PlatformException>((_, _) {
+            if (tentativa < _tentativasDeEnquadrar) {
+              _enquadrar(controlador, tentativa + 1);
+            }
+          });
     });
   }
 
