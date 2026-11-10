@@ -1,15 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/deslocamento.dart';
 import '../models/item_pedido.dart';
+import '../models/movimentacao_estoque.dart';
 import '../models/pedido.dart';
+import '../models/tipo_movimentacao.dart';
 import 'falhas.dart';
 
 /// US06, US07, US10 a US15: grava e acompanha os pedidos em pedidos/{id}.
 class PedidoService {
   final FirebaseFirestore _firestore;
+  final FirebaseAuth _auth;
 
-  PedidoService(this._firestore);
+  PedidoService(this._firestore, this._auth);
 
   CollectionReference<Map<String, dynamic>> get _pedidos =>
       _firestore.collection('pedidos');
@@ -118,9 +122,30 @@ class PedidoService {
         for (final item in pedido.itens) {
           final entregue =
               quantidadesEntregues[item.produtoId] ?? item.quantidadePedida;
+          final saldo = estoques[item.produtoId]! - entregue;
           transacao.update(_produtos.doc(item.produtoId), {
-            'quantidadeEstoque': estoques[item.produtoId]! - entregue,
+            'quantidadeEstoque': saldo,
           });
+          if (entregue > 0) {
+            transacao.set(
+              _firestore.collection('movimentacoes_estoque').doc(),
+              {
+                ...MovimentacaoEstoque(
+                  id: '',
+                  produtoId: item.produtoId,
+                  nomeProduto: item.nomeProduto,
+                  tipo: TipoMovimentacao.saida,
+                  quantidade: entregue,
+                  saldo: saldo,
+                  data: DateTime.now(),
+                  usuarioId: _auth.currentUser?.uid ?? '',
+                  pedidoId: pedido.id,
+                  clienteNome: pedido.clienteNome,
+                ).toMap(),
+                'data': FieldValue.serverTimestamp(),
+              },
+            );
+          }
           itensEntregues.add(
             ItemPedido(
               produtoId: item.produtoId,

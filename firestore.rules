@@ -30,6 +30,10 @@ service cloud.firestore {
       allow write: if ehAdministrador();
     }
 
+    match /movimentacoes_estoque/{id} {
+      allow read, create: if ehAdministrador();
+    }
+
     match /pedidos/{pedidoId} {
       allow read: if logado() &&
         (resource.data.clienteId == request.auth.uid || ehAdministrador());

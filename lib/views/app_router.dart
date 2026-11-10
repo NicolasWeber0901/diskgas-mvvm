@@ -12,6 +12,7 @@ import '../viewmodels/carrinho_viewmodel.dart';
 import '../viewmodels/clientes_viewmodel.dart';
 import '../viewmodels/detalhe_pedido_viewmodel.dart';
 import '../viewmodels/estoque_viewmodel.dart';
+import '../viewmodels/historico_estoque_viewmodel.dart';
 import '../viewmodels/login_viewmodel.dart';
 import '../viewmodels/pedidos_viewmodel.dart';
 import '../viewmodels/perfil_cliente_viewmodel.dart';
@@ -23,6 +24,7 @@ import 'carrinho_view.dart';
 import 'clientes_view.dart';
 import 'detalhe_pedido_view.dart';
 import 'estoque_view.dart';
+import 'historico_estoque_view.dart';
 import 'login_view.dart';
 import 'pedidos_view.dart';
 import 'perfil_cliente_view.dart';
@@ -151,6 +153,17 @@ GoRouter criarRotas(SessaoViewModel sessao) {
                   EstoqueViewModel(context.read<ProdutoService>())..iniciar(),
               child: const EstoqueView(),
             ),
+            routes: [
+              GoRoute(
+                path: 'historico',
+                builder: (context, state) => ChangeNotifierProvider(
+                  create: (context) =>
+                      HistoricoEstoqueViewModel(context.read<ProdutoService>())
+                        ..iniciar(),
+                  child: const HistoricoEstoqueView(),
+                ),
+              ),
+            ],
           ),
         ],
       ),

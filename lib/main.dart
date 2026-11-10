@@ -25,8 +25,8 @@ Future<void> main() async {
     firestore,
   );
   final clienteService = ClienteService(firestore);
-  final produtoService = ProdutoService(firestore);
-  final pedidoService = PedidoService(firestore);
+  final produtoService = ProdutoService(firestore, FirebaseAuth.instance);
+  final pedidoService = PedidoService(firestore, FirebaseAuth.instance);
   final rotaService = RotaService(
     http.Client(),
     const String.fromEnvironment('ROUTES_API_KEY'),

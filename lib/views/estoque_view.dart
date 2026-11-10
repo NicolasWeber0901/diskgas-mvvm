@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../models/produto.dart';
@@ -44,7 +45,14 @@ class EstoqueView extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Estoque'),
-        actions: const [BotaoSair()],
+        actions: [
+          IconButton(
+            tooltip: 'Histórico de estoque',
+            icon: const Icon(Icons.history_rounded),
+            onPressed: () => context.push('/admin/estoque/historico'),
+          ),
+          const BotaoSair(),
+        ],
       ),
       bottomNavigationBar: const NavegacaoAdmin(2),
       floatingActionButton: FloatingActionButton.extended(
