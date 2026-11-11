@@ -121,6 +121,9 @@ class DetalhePedidoViewModel extends ChangeNotifier {
     for (final item in atual.itens) {
       final texto =
           quantidadesTexto[item.produtoId] ?? '${item.quantidadePedida}';
+      if (texto.trim().isEmpty) {
+        return _falhar('Informe a quantidade entregue.');
+      }
       final quantidade = int.tryParse(texto.trim());
       if (quantidade == null || quantidade < 0) {
         return _falhar('As quantidades entregues não podem ser negativas.');
